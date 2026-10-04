@@ -17,6 +17,7 @@ NAIVE_COLLECTION = "lab18_naive"
 # --- Embedding ---
 EMBEDDING_MODEL = "BAAI/bge-m3"
 EMBEDDING_DIM = 1024
+TORCH_DEVICE = os.getenv("TORCH_DEVICE", "cpu")
 
 # --- Chunking ---
 HIERARCHICAL_PARENT_SIZE = 2048

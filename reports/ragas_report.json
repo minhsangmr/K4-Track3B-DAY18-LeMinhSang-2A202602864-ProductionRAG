@@ -1,0 +1,119 @@
+{
+  "aggregate": {
+    "faithfulness": 0.9016666666666666,
+    "answer_relevancy": 0.8709657664686423,
+    "context_precision": 0.924999999927083,
+    "context_recall": 0.8666666666666666,
+    "latency_breakdown": {
+      "m1_chunking": 0.06,
+      "m5_enrichment": 140.66,
+      "m2_indexing": 34.04,
+      "m3_reranker_loading": 1.42,
+      "query_and_generation": 288.72,
+      "m4_ragas_eval": 59.72
+    }
+  },
+  "num_questions": 20,
+  "failures": [
+    {
+      "question": "Một nhân viên Senior có 9 năm thâm niên được nghỉ bao nhiêu ngày phép năm và lương trong khoảng nào?",
+      "answer": "Dựa trên thông tin trong context:\n\n- **Số ngày phép năm:** Nhân viên 9 năm thâm niên được 18 ngày phép (15 + 3).\n- **Khoảng lương:** Không tìm thấy.",
+      "ground_truth": "Theo chính sách v2024: 15 ngày cơ bản + 3 ngày thâm niên (9÷3=3) = 18 ngày phép. Lương Senior (P3-P4): 20-35 triệu VNĐ/tháng.",
+      "worst_metric": "faithfulness",
+      "score": 0.5,
+      "avg_score": 0.6820189376058761,
+      "diagnosis": "LLM tự bịa câu trả lời ngoài tài liệu",
+      "suggested_fix": "Thắt chặt system prompt, giảm nhiệt độ (temperature) về 0"
+    },
+    {
+      "question": "Nhân viên tạm ứng 15 triệu, sau 20 ngày mới thanh toán. Bị phạt bao nhiêu?",
+      "answer": "Theo quy định trong context, khoản tạm ứng chưa thanh toán sau 15 ngày sẽ bị tính phí phạt **2%/tháng** trên số tiền chưa hoàn ứng (15.000.000 VNĐ, tương đương 300.000 VNĐ/tháng) và được khấu trừ vào lương tháng kế tiếp. \n\n*(Context không có quy định chi tiết về công thức tính số ngày quá hạn lẻ mà chỉ nêu mức phí chung là 2%/tháng trên số tiền chưa hoàn ứng).*",
+      "ground_truth": "Thời hạn thanh toán là 15 ngày. Quá hạn 5 ngày, bị tính phí 2%/tháng trên 15.000.000 VNĐ = 300.000 VNĐ/tháng (tính pro-rata khoảng 50.000 VNĐ cho 5 ngày).",
+      "worst_metric": "context_recall",
+      "score": 0.5,
+      "avg_score": 0.699051173566398,
+      "diagnosis": "Hệ thống tìm kiếm bỏ sót đoạn văn đúng",
+      "suggested_fix": "Cải thiện lại bước cắt đoạn hoặc bổ sung từ khóa BM25"
+    },
+    {
+      "question": "Bao lâu phải đổi mật khẩu một lần?",
+      "answer": "Theo Chính sách mật khẩu v2 (thay thế Chính sách mật khẩu v1.0), mật khẩu phải được thay đổi **mỗi 120 ngày** (theo quy định trước đó tại v1 là **mỗi 90 ngày**).",
+      "ground_truth": "Theo chính sách hiện hành (v2.0), mật khẩu phải được thay đổi mỗi 120 ngày. Chính sách cũ yêu cầu 90 ngày nhưng đã bị thay thế.",
+      "worst_metric": "context_precision",
+      "score": 0.49999999995,
+      "avg_score": 0.7174191265221468,
+      "diagnosis": "Đoạn văn không liên quan bị xếp lên đầu",
+      "suggested_fix": "Bổ sung tầng Cross-Encoder reranking hoặc lọc theo metadata"
+    },
+    {
+      "question": "Nếu cần mua một chiếc laptop 30 triệu cho nhân viên mới, ai phê duyệt và cần gì từ phòng CNTT?",
+      "answer": "Dựa vào context được cung cấp:\n\n- **Cần gì từ phòng CNTT:** Cần có xác nhận của phòng CNTT về cấu hình kỹ thuật trước khi đề xuất.\n- **Ai phê duyệt (laptop 30 triệu):** Không tìm thấy (context chỉ cung cấp thẩm quyền phê duyệt đơn hàng mua sắm dưới 5.000.000 VNĐ).",
+      "ground_truth": "Laptop 30 triệu nằm trong khoảng 5-50 triệu nên cần Giám đốc phòng ban (Director) phê duyệt. Ngoài ra, mua sắm thiết bị CNTT cần có xác nhận cấu hình kỹ thuật từ phòng CNTT trước khi đề xuất. Cần đính kèm ít nhất 3 báo giá vì trên 10 triệu.",
+      "worst_metric": "context_recall",
+      "score": 0.3333333333333333,
+      "avg_score": 0.7876926739328556,
+      "diagnosis": "Hệ thống tìm kiếm bỏ sót đoạn văn đúng",
+      "suggested_fix": "Cải thiện lại bước cắt đoạn hoặc bổ sung từ khóa BM25"
+    },
+    {
+      "question": "Nhân viên được tài trợ khóa học 25 triệu, nghỉ việc sau 8 tháng hoàn thành khóa học. Phải hoàn trả bao nhiêu?",
+      "answer": "Nhân viên phải hoàn trả **100% chi phí** đào tạo đã được tài trợ, tương đương **25 triệu VNĐ** (do nghỉ việc sau 8 tháng, trước thời hạn cam kết làm việc ít nhất 1 năm sau khi hoàn thành khóa học).",
+      "ground_truth": "Nhân viên phải cam kết làm việc ít nhất 1 năm sau khi hoàn thành khóa học. Nghỉ sau 8 tháng là trước hạn cam kết, phải hoàn trả 100% chi phí tức 25.000.000 VNĐ.",
+      "worst_metric": "faithfulness",
+      "score": 0.4,
+      "avg_score": 0.8239646594381167,
+      "diagnosis": "LLM tự bịa câu trả lời ngoài tài liệu",
+      "suggested_fix": "Thắt chặt system prompt, giảm nhiệt độ (temperature) về 0"
+    },
+    {
+      "question": "Có cần kích hoạt xác thực đa yếu tố (MFA) không?",
+      "answer": "Có. Tất cả nhân viên **bắt buộc** kích hoạt MFA cho tài khoản email, VPN và các hệ thống nội bộ.",
+      "ground_truth": "Có, theo chính sách mật khẩu v2.0 hiện hành, tất cả nhân viên bắt buộc kích hoạt MFA cho email, VPN và hệ thống nội bộ. Chính sách cũ v1.0 không yêu cầu MFA.",
+      "worst_metric": "context_recall",
+      "score": 0.5,
+      "avg_score": 0.8257350435489564,
+      "diagnosis": "Hệ thống tìm kiếm bỏ sót đoạn văn đúng",
+      "suggested_fix": "Cải thiện lại bước cắt đoạn hoặc bổ sung từ khóa BM25"
+    },
+    {
+      "question": "Thâm niên bao nhiêu năm thì được cộng thêm ngày phép?",
+      "answer": "Dựa trên thông tin trong context:\n\n- Theo quy định nghỉ phép năm 2024: Nhân viên có thâm niên từ **3 năm trở lên** được cộng thêm 1 ngày phép cho mỗi 3 năm làm việc liên tục.\n- Theo một đoạn trích khác trong tài liệu: Nhân viên có thâm niên từ **5 năm trở lên** được cộng thêm 1 ngày phép cho mỗi 5 năm làm việc liên tục.",
+      "ground_truth": "Theo chính sách v2024 hiện hành, nhân viên có thâm niên từ 3 năm trở lên được cộng thêm 1 ngày phép cho mỗi 3 năm. Chính sách cũ v2023 yêu cầu 5 năm.",
+      "worst_metric": "context_precision",
+      "score": 0.49999999995,
+      "avg_score": 0.8331485312071336,
+      "diagnosis": "Đoạn văn không liên quan bị xếp lên đầu",
+      "suggested_fix": "Bổ sung tầng Cross-Encoder reranking hoặc lọc theo metadata"
+    },
+    {
+      "question": "Nghỉ phép không lương 20 ngày cần ai phê duyệt?",
+      "answer": "Nghỉ phép không lương 20 ngày cần phê duyệt của Giám đốc điều hành (CEO).",
+      "ground_truth": "Nghỉ 16-30 ngày cần phê duyệt của Giám đốc điều hành (CEO). Lưu ý: nghỉ trên 14 ngày không lương, nhân viên phải tự đóng phần bảo hiểm của mình.",
+      "worst_metric": "context_recall",
+      "score": 0.5,
+      "avg_score": 0.874999999975,
+      "diagnosis": "Hệ thống tìm kiếm bỏ sót đoạn văn đúng",
+      "suggested_fix": "Cải thiện lại bước cắt đoạn hoặc bổ sung từ khóa BM25"
+    },
+    {
+      "question": "Nhân viên thử việc có được hưởng bảo hiểm sức khỏe PVI không?",
+      "answer": "Không. Nhân viên thử việc chưa được hưởng gói bảo hiểm sức khỏe PVI (chỉ nhân viên chính thức mới được cung cấp gói này).",
+      "ground_truth": "KHÔNG. Nhân viên thử việc chưa được hưởng gói bảo hiểm sức khỏe PVI. Chỉ được tham gia bảo hiểm xã hội bắt buộc.",
+      "worst_metric": "faithfulness",
+      "score": 0.6666666666666666,
+      "avg_score": 0.913196115880273,
+      "diagnosis": "LLM tự bịa câu trả lời ngoài tài liệu",
+      "suggested_fix": "Thắt chặt system prompt, giảm nhiệt độ (temperature) về 0"
+    },
+    {
+      "question": "Mật khẩu phải có tối thiểu bao nhiêu ký tự?",
+      "answer": "Theo Chính sách mật khẩu phiên bản hiện hành (phiên bản 2.0), mật khẩu phải có tối thiểu **12 ký tự** (phiên bản cũ 1.0 đã được thay thế quy định tối thiểu 8 ký tự).",
+      "ground_truth": "Theo chính sách hiện hành (v2.0), mật khẩu phải có tối thiểu 12 ký tự. Chính sách cũ (v1.0) yêu cầu 8 ký tự nhưng đã bị thay thế.",
+      "worst_metric": "answer_relevancy",
+      "score": 0.6586751793372757,
+      "avg_score": 0.914668794821819,
+      "diagnosis": "Câu trả lời bị lệch trọng tâm câu hỏi",
+      "suggested_fix": "Viết lại prompt hướng dẫn mô hình trả lời trực tiếp hơn"
+    }
+  ]
+}

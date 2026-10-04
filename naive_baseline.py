@@ -51,11 +51,31 @@ def main():
         if llm_client and contexts:
             try:
                 context_str = "\n\n".join(contexts)
-                resp = llm_client.chat.completions.create(model="gpt-4o-mini", messages=[
-                    {"role": "system", "content": "Trả lời CHỈ dựa trên context. Nếu không có → nói 'Không tìm thấy.'"},
-                    {"role": "user", "content": f"Context:\n{context_str}\n\nCâu hỏi: {item['question']}"},
-                ])
-                answer = resp.choices[0].message.content
+                models = [os.getenv("OPENAI_MODEL", "gpt-4o-mini"), "ag/gemini-3.8-flash", "gpt-4o-mini"]
+                answer = None
+                seen = set()
+                for m in models:
+                    if not m or m in seen:
+                        continue
+                    seen.add(m)
+                    try:
+                        resp = llm_client.chat.completions.create(
+                            model=m,
+                            messages=[
+                                {"role": "system", "content": "Trả lời CHỈ dựa trên context. Nếu không có → nói 'Không tìm thấy.'"},
+                                {"role": "user", "content": f"Context:\n{context_str}\n\nCâu hỏi: {item['question']}"},
+                            ],
+                            temperature=0.0,
+                            max_tokens=250,
+                        )
+                        content = resp.choices[0].message.content
+                        if content and content.strip():
+                            answer = content.strip()
+                            break
+                    except Exception:
+                        continue
+                if not answer:
+                    answer = contexts[0]
             except Exception:
                 answer = contexts[0]
         else:
